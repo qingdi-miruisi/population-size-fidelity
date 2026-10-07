@@ -81,7 +81,12 @@ def strip_matlab(src):
         if not ch.isspace():
             prev_sig = ch
         i += 1
-    return ''.join(out)
+    text = ''.join(out)
+    # MATLAB line continuation: "...<newline>" joins two physical lines into a
+    # single logical line. Blank the ellipsis, keeping every line and column in
+    # place, so that a \s* in the pattern can bridge the join.
+    text = re.sub(r'\.\.\.[ \t]*\r?\n', lambda m: ' ' * len(m.group(0)), text)
+    return text
 
 
 def line_of(text, pos):
