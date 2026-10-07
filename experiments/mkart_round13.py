@@ -89,40 +89,52 @@ def main():
         print('A/B/C table: %d of %d problems available' % (len(rows), len(PROBS)))
 
     if rows:
-        lines = [r'\footnotesize', r'\setlength{\tabcolsep}{4pt}',
-                 r'\begin{tabular}{lccc rr}', r'\toprule',
-                 r'problem & published & declared & repaired & declared$-$pub & repaired$-$dec \\',
+        lines = [r'\scriptsize', r'\setlength{\tabcolsep}{4pt}',
+                 r'\begin{tabular}{lcccrrr}', r'\toprule',
+                 r'problem & published & declared & repaired & '
+                 r'decl$-$pub & rep$-$decl & rep$-$pub \\',
                  r'\midrule']
-        for (lab, mp, ma, mr, g1, g2, *_ ) in rows:
-            lines.append('%s & %.4f & %.4f & %.4f & $%+.1f\\%%$ & $%+.1f\\%%$ \\\\'
-                         % (lab, mp, ma, mr, g1, g2))
+        for (lab, mp, ma, mr, g1, g2, a_, p_, r_) in rows:
+            g3 = (mp - mr) / mp * 100.0 if mp else np.nan
+            lines.append('%s & %.4f & %.4f & %.4f & $%+.1f$ & $%+.1f$ & $%+.1f$ \\\\'
+                         % (lab, mp, ma, mr, g1, g2, g3))
         lines += [r'\bottomrule', r'\end{tabular}']
         with io.open(os.path.join(TAB, 'tab_abc.tex'), 'w', encoding='utf-8', newline='\n') as fh:
             fh.write('\n'.join(lines) + '\n')
 
         # declared vs published: same realised size, different declared value
-        dif = [abs(g) for (_, _, _, _, g, _, _, _, _) in rows]
         N['nAbcProblems'] = len(rows)
-        N['abcDeclVsPubMed'] = '%.1f' % float(np.median(dif))
-        N['abcDeclVsPubMax'] = '%.1f' % float(np.max(dif))
-        n_same = 0
-        n_pairs = 0
+        # declared vs published: the declaration effect
+        d1 = np.array([g for (_, _, _, _, g, _, _, _, _) in rows])
+        N['abcDeclVsPubAbsMed'] = '%.1f' % float(np.median(np.abs(d1)))
+        N['abcDeclVsPubSignedMed'] = '%+.1f' % float(np.median(d1))
+        N['abcDeclVsPubMax'] = '%.1f' % float(np.max(np.abs(d1)))
+        # repaired vs declared: the pure realised-size effect
+        d2 = np.array([g for (_, _, _, _, _, g, _, _, _) in rows])
+        N['abcRepVsDeclMed'] = '%.1f' % float(np.median(d2))
+        N['abcRepVsDeclPos'] = int((d2 > 0.05).sum())
+        N['abcRepVsDeclTie'] = int((np.abs(d2) <= 0.05).sum())
+        N['abcRepVsDeclNeg'] = int((d2 < -0.05).sum())
+        # repaired vs published: the total effect (the headline count)
+        d3 = np.array([(mp - mr) / mp * 100.0 for (_, mp, _, mr, _, _, _, _, _) in rows])
+        N['abcRepVsPubMed'] = '%+.1f' % float(np.median(d3))
+        N['abcRepVsPubPos'] = int((d3 > 0.05).sum())
+        N['abcRepVsPubTie'] = int((np.abs(d3) <= 0.05).sum())
+        N['abcRepVsPubNeg'] = int((d3 < -0.05).sum())
+        # the declaration test: how many problems separate, and the smallest p
+        ps = []
         for (_, _, _, _, _, _, a, p_, r) in rows:
             n = min(len(a), len(p_)); aa, pp_ = a[:n], p_[:n]
             try:
-                pv = wilcoxon(aa, pp_).pvalue
+                ps.append(float(wilcoxon(aa, pp_).pvalue))
             except Exception:
-                pv = np.nan
-            n_pairs += 1
-            if np.isfinite(pv) and pv >= 0.05:
-                n_same += 1
-        N['abcIndistinct'] = n_same
-        N['abcPairs'] = n_pairs
-        # repaired vs declared: the realised-size effect
-        d = []
-        for (_, _, _, _, _, g2, _, _, _) in rows:
-            d.append(abs(g2))
-        N['abcRepVsDeclMed'] = '%.1f' % float(np.median(d))
+                ps.append(np.nan)
+        ps = np.array(ps)
+        N['abcPairs'] = int(np.sum(np.isfinite(ps)))
+        N['abcIndistinct'] = int(np.sum(ps >= 0.05))
+        N['abcMinP'] = '%.2f' % float(np.nanmin(ps))
+        N['abcDeclReqMthree'] = 91
+        N['abcDeclReqMfive'] = 85
 
     # ---------------------------------------------------------- K sweep
     krows = []
