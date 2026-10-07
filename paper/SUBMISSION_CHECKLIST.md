@@ -119,9 +119,13 @@ framework, as follows.
 
 ## 4. Items the author must complete before uploading
 
-1. **Confirm or replace the repository URL** `github.com/zhangyuxuan/population-size-fidelity`
-   and the Zenodo DOI placeholder in the Data availability statement; both are
-   currently illustrative and must point at the real release.
+1. **Nothing to fill in for the data statement.** The repository is live at
+   `github.com/qingdi-miruisi/population-size-fidelity` (tag `v1.1-final`) and
+   the Data availability statement already quotes it. A DOI was considered and
+   deliberately **not** pursued: Zenodo is unreachable from the author's
+   network, and a GitHub URL pinned to a tag is accepted practice. If a DOI is
+   wanted later, `deposit/` holds a ready upload package and the dataset
+   description for ScienceDB or OSF.
 2. Confirm the ORCID iD, to be entered in the submission system.
 3. Record the exact PlatEMO 4.16 archive hash (the release note is dated
    July 2026, 360 algorithms, 630 problems) in the repository README.
@@ -252,5 +256,5 @@ comparing 91 individuals with 100.
 ### Repository
 
 `https://github.com/qingdi-miruisi/population-size-fidelity` — 71 files, 19 MB,
-tag `v1.0-scissubmission`. Contains the audit, the experiment harnesses, every
+tag `v1.1-final`. Contains the audit, the experiment harnesses, every
 generator script, all derived CSV tables and the **raw per-run archives**.

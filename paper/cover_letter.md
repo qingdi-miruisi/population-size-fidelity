@@ -118,7 +118,7 @@ work.
 - No external funding supported this work.
 - Data and code availability: all materials are publicly available at
   **https://github.com/qingdi-miruisi/population-size-fidelity** (tag
-  `v1.0-scissubmission`). The release contains the audit script, the per-file
+  `v1.1-final`). The release contains the audit script, the per-file
   audit listing with line numbers, the complete realised-count table $L(N,M)$
   over 13,895 combinations, the three-quantity trace of sixteen algorithms, the
   cross-library comparison, the measured inter-vector angles, the corrected
