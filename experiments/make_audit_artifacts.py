@@ -25,6 +25,20 @@ LEX = os.path.join(SRC, 'audit13_lex.csv')
 LEXTXT = os.path.join(SRC, 'audit13_lex.txt')
 
 
+
+# PlatEMO class name -> the name the paper and the reader should see
+DISPLAY = {
+    'NSGAIII': 'NSGA-III', 'NSGAII': 'NSGA-II', 'MOEAD': 'MOEA/D',
+    'MOEADDRA': 'MOEA/D-DRA', 'MOEADDE': 'MOEA/D-DE', 'MOEADSTM': 'MOEA/D-STM',
+    'CTAEA': 'C-TAEA', 'RVEA': 'RVEA', 'RVEAa': 'RVEAa', 'LMOCSO': 'LMOCSO',
+    'FDSEA': 'FDSEA', 'HEA': 'HEA', 'DGEA': 'DGEA', 'PPS': 'PPS',
+    'SPEA2': 'SPEA2', 'IBEA': 'IBEA',
+}
+
+
+def disp(name):
+    return DISPLAY.get(name, name)
+
 def read_dyn():
     rows = []
     with io.open(DYN, encoding='utf-8') as fh:
@@ -62,12 +76,12 @@ def main():
              r'\midrule']
     for r in aff:
         lines.append('%s & %s & %s & %s & %s & diverges \\\\' % (
-            r['algorithm'], r['N_req'], r['UniformPoint_returned'],
+            disp(r['algorithm']), r['N_req'], r['UniformPoint_returned'],
             r['N_real'], r['Problem_N_after']))
     lines.append(r'\addlinespace')
     for r in ctl:
         lines.append('%s & %s & %s & %s & %s & faithful \\\\' % (
-            r['algorithm'], r['N_req'], r['UniformPoint_returned'],
+            disp(r['algorithm']), r['N_req'], r['UniformPoint_returned'],
             r['N_real'], r['Problem_N_after']))
     lines += [r'\bottomrule', r'\end{tabular}']
     with io.open(os.path.join(TAB, 'tab_trace.tex'), 'w', encoding='utf-8', newline='\n') as fh:
@@ -77,9 +91,9 @@ def main():
     N['nTracedAff'] = len(aff)
     N['nTracedCtl'] = len(ctl)
     N['nRealMin'] = min((int(r['N_real']) for r in aff), default=91)
-    N['nRealMinAlg'] = next((r['algorithm'] for r in aff
-                             if int(r['N_real']) == N['nRealMin']), '')
-    N['ctlNames'] = ', '.join(r['algorithm'] for r in ctl)
+    N['nRealMinAlg'] = disp(next((r['algorithm'] for r in aff
+                                  if int(r['N_real']) == N['nRealMin']), ''))
+    N['ctlNames'] = ', '.join(disp(r['algorithm']) for r in ctl)
 
     with io.open(os.path.join(SUPP, 'trace_three_quantities.csv'), 'w',
                  encoding='utf-8', newline='') as fh:
