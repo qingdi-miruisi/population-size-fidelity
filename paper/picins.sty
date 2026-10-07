@@ -1,0 +1,11 @@
+% Minimal stub for picins.sty
+% The official SCIS2026.cls loads picins (for \parpic, picture-in-paragraph).
+% The manuscript does not use \parpic, so a no-op definition on the local
+% search path lets the official class file load unchanged and produces
+% identical output.  This stub is NOT part of the submitted manuscript.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{picins}[2026/01/01 v3.0 local no-op stub]
+\newcommand{\parpic}[2][]{}%
+\newcommand{\picinsbox}[1]{}%
+\newcommand{\picinsline}[1]{}%
+\endinput

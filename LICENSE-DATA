@@ -1,0 +1,17 @@
+Data licence: Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+The files in data/ and the derived tables and figures in paper/tables/ and
+paper/figs/ are released under CC BY 4.0. You are free to share and adapt them
+for any purpose, provided you give appropriate credit.
+
+Full text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Please cite as:
+
+  Zhang Y X. A population-size fidelity framework for reference-vector
+  multi-objective evolutionary algorithms with an audit of PlatEMO.
+  SCIENCE CHINA Information Sciences, 2026 (submitted).
+
+The two PlatEMO source files reproduced under paper/platemo/ remain under the
+licence of the PlatEMO distribution and are included only so that the audited
+constructor can be inspected alongside the audit.

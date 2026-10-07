@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite the manuscript below."
+title: "Population-size fidelity in reference-vector multi-objective evolutionary algorithms: audit data, tables and experiment code"
+abstract: >-
+  Audit of PlatEMO 4.16 for silent population-size divergence in reference-vector
+  multi-objective evolutionary algorithms, together with the experiment code,
+  released tables and raw per-run archives behind the accompanying manuscript.
+type: software
+authors:
+  - family-names: "Zhang"
+    given-names: "Yuxuan"
+    email: "3150644070@qq.com"
+    affiliation: "Graduate School, Army Engineering University of PLA, Nanjing 210007, China"
+license: MIT
+keywords:
+  - multi-objective optimization
+  - evolutionary algorithms
+  - reference vectors
+  - benchmarking reproducibility
+  - PlatEMO
+repository-code: "https://github.com/zhangyuxuan/population-size-fidelity"

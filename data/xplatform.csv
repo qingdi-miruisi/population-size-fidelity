@@ -1,0 +1,11 @@
+library,N_requested,M,realised,construction
+PlatEMO 4.16,100,3,91,"UniformPoint(N,M)"
+pymoo 0.6.2,100,3,91,das-dennis closest partitions
+PlatEMO 4.16,100,5,85,"UniformPoint(N,M)"
+pymoo 0.6.2,100,5,70,das-dennis closest partitions
+PlatEMO 4.16,100,8,72,"UniformPoint(N,M)"
+pymoo 0.6.2,100,8,36,das-dennis closest partitions
+PlatEMO 4.16,100,10,65,"UniformPoint(N,M)"
+pymoo 0.6.2,100,10,55,das-dennis closest partitions
+PlatEMO 4.16,200,3,190,"UniformPoint(N,M)"
+pymoo 0.6.2,200,3,190,das-dennis closest partitions

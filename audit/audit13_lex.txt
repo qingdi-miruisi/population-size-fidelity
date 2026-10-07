@@ -1,0 +1,24 @@
+Lexical audit of the PlatEMO 4.16 algorithm tree
+(comments and string literals removed before matching)
+
+algorithm .m files scanned            : 1887
+files with a live assignment          : 84
+algorithm directories at depth 2    : 360
+affected algorithm directories      : 83
+unaffected algorithm directories    : 277
+
+-- where the assignment sits relative to Initialization --
+  assignment BEFORE Initialization    : 62
+  assignment AFTER  Initialization    : 6
+  no Initialization call in the file  : 16
+
+-- files where the assignment follows Initialization --
+  Multi-objective optimization/FDV/FDV.m
+  Multi-objective optimization/GLMO/GLMO.m
+  Multi-objective optimization/GWASF-GA/GWASFGA.m
+  Multi-objective optimization/LCSA/LCSA.m
+  Multi-objective optimization/POCEA/POCEA.m
+  Multi-objective optimization/WASF-GA/WASFGA.m
+
+-- control: algorithms in the same tree with no such assignment --
+  277 directories, e.g. AC-MMEA, ADSAPSO, AE-NSGA-II, AFSEA, AGE-II, AGE-MOEA, AGE-MOEA-II, AGSEA, AMG-PSL, APSEA, AR-MOEA, AVG-SAEA, BCE-IBEA, BL-SAEA
