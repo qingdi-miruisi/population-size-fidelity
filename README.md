@@ -154,5 +154,7 @@ here; only two files are reproduced for reference, with their origin noted.
 
 ## Citation
 
+Repository: <https://github.com/qingdi-mirusi/population-size-fidelity>
+
 See `CITATION.cff`. The repository accompanies the manuscript; the final
 article identifier will be added here once the paper is published.
