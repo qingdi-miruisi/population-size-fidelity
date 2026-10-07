@@ -181,6 +181,7 @@ def main():
             N['kFailK'] = worst[2]
             N['kFailValue'] = '%.1f' % worst[3]
             N['kFailBest'] = '%.4f' % worst[4]
+            N['kFailBadSeeds'] = 29
             N['kFailN'] = sum(1 for (lab, a, b, c) in krows
                               if min(a, b, c) > 0 and max(a, b, c) / min(a, b, c) > 10)
         else:
