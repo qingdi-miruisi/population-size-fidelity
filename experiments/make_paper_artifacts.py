@@ -671,7 +671,7 @@ def main():
                      '(bar = median change, error bar = 95% bootstrap CI, '
                      '* = $p<0.05$)', fontsize=8)
         ax.invert_yaxis()
-        fig.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_main.pdf')); plt.close(fig)
+        fig.tight_layout(); fig.savefig(os.path.join(FIG, 'fig_main.pdf'), bbox_inches='tight'); plt.close(fig)
         print('figures written')
     except Exception as e:
         print('figure error:', e)
