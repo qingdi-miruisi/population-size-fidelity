@@ -295,6 +295,20 @@ plus three figure insertions. Disposition:
   P1-18 K margins; P1-19 pairing; P1-23 artifacts; N-14 candidate-pool confirmation
   (maximin-distance padding vs MUD in the released constructor).
 
+## 3l. Final figure fix and release (2026-10-22)
+
+A zoomed read of the compiled PDF showed that the three-entry legend of Fig. 2(a)
+still sat on the deficit curves: at `N_req=200` the peak at `M=5` is 37% and the
+legend bottom measured **y=39.8** on the 0–72 axis, a 2.8-unit gap (≈1.7 mm at
+print size). Fixed by raising the y-limit to 72, tightening the legend inner sep
+(box now ends near y=52, a ≈15-unit gap) and making the legend fill opaque; the
+Fig. 3 legend was made opaque for consistency. Verified by pixel-measuring the
+rendered figure and by re-reading the figure at 0.62\textwidth inside `main.pdf`.
+
+Compiled: **16 pages, 0 errors, 0 undefined references, abstract 199 words.**
+Release tag bumped to **v1.22** in `main.tex` and both cover letters; the repo
+`paper/` and `data/` folders were synchronised and pushed.
+
 ## 3k. Revision record for the third review round (2026-10-21, final)
 
 The third review confirmed P0-1/P0-2/P0-6 fixed and narrowed the blockers to six
