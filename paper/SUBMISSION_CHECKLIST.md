@@ -308,6 +308,19 @@ one text column (hanging indent at a single x) with right-aligned numeric
 labels, which is the standard layout; the apparent offset of two-digit labels
 is that alignment working as intended. Tag v1.26 (commit listed below).
 
+## 3p. Eighth-review round closed out (2026-10-22)
+
+The blocker from round seven was verified closed by an independent re-check
+(35/35 hash matches, zero build junk, byte-identical independent compile,
+correct build order). The single remaining suggestion - the version reference
+- is now unified: the Data availability statement and the cover letter cite
+tag v1.26, and tag v1.26 is the commit that contains this manuscript, so a
+reader who checks it out gets exactly the submitted sources. The reference
+list alignment was also verified pixel-wise on page 16: all 33 entries share
+one text column (hanging indent at a single x) with right-aligned numeric
+labels, which is the standard layout; the apparent offset of two-digit labels
+is that alignment working as intended. Tag v1.26 (commit listed below).
+
 ## 3o. Seventh-review round closed out (2026-10-22)
 
 The only blocker was a stale source package: the zip had been built before the
