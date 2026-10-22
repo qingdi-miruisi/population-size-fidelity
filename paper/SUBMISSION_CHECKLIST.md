@@ -295,6 +295,32 @@ plus three figure insertions. Disposition:
   P1-18 K margins; P1-19 pairing; P1-23 artifacts; N-14 candidate-pool confirmation
   (maximin-distance padding vs MUD in the released constructor).
 
+## 3m. SCIS-oriented reframe and the size-matched control (2026-10-22)
+
+After the SCIS prescreen return, two changes were made for a resubmission:
+
+1. **Reframe.** The abstract now opens with the information-science framing
+   ("A computational experiment is only as credible as the quantities it claims
+   to control") and PlatEMO is presented as the case study, not the subject.
+2. **The only evidence gap is closed.** The released per-run archives store the
+   final objective matrix of every run, so the size-matched control is now
+   computed rather than deferred: each repaired front is downsampled to the
+   published arm's realised size (91 at three objectives, 85 at five) and IGD is
+   recomputed against the same reference front (PlatEMO `GetOptimum(400)`,
+   reconstructed in Python). The pipeline reproduces **all fifteen** published-arm
+   medians of Table 6 to four decimals (e.g. DTLZ1 0.0657, LSMOP9 0.7359).
+
+   | | raw | maximin | random |
+   |---|---|---|---|
+   | median gain | 1.7% | 1.0% | 0.8% |
+   | better than published | 12/15 | 10/15 | 10/15 |
+
+   So most of the median gain is mechanical, and a small genuine effect remains
+   on ten of fifteen problems. Reported in 5.3, the conclusion, the abstract and
+   Table S8; the script is `experiments/size_matched_igd.py` in the release.
+
+Compiled: 16 pages, 0 errors, 0 undefined, abstract exactly 200 words. Tag v1.23.
+
 ## 3l. Final figure fix and release (2026-10-22)
 
 A zoomed read of the compiled PDF showed that the three-entry legend of Fig. 2(a)
