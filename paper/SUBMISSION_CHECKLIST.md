@@ -295,6 +295,23 @@ plus three figure insertions. Disposition:
   P1-18 K margins; P1-19 pairing; P1-23 artifacts; N-14 candidate-pool confirmation
   (maximin-distance padding vs MUD in the released constructor).
 
+## 3o. Seventh-review round closed out (2026-10-22)
+
+The only blocker was a stale source package: the zip had been built before the
+final four minutes of edits, so its main.tex (200-word abstract, v1.23) and two
+figures differed from the shipped PDFs. The package was rebuilt from scratch
+and verified three ways: (i) md5 of main.tex and all four figures inside the
+zip match the workspace; (ii) zero junk entries (no .aux/.log/.lock, no
+supp/supp.pdf duplicate, no unused tables); (iii) the extracted package
+compiles independently to a 16-page main.pdf and a 4-page supplementary.pdf.
+Small fixes: supp.tex title now matches the main title exactly; supplementary
+page size matches the manuscript (21x28 cm, 595.3x793.7 pt); the S8 caption
+states the two-level median (200 subsets per run, then over runs); 5.3 now
+says "about half" of the median gain is mechanical; Fig. 3 leader lines
+lengthened and visible; Fig. 1 arrow labels clear of the box edges.
+Compiled: main 16 pages / 0 errors / 0 undefined / abstract 194 words; supp 4
+pages, same page size. Tag v1.25 (commit 0ba8c33).
+
 ## 3n. Sixth-review round closed out (2026-10-22)
 
 B1 fixed (the surviving-gain list now names LSMOP6 at five objectives, not
