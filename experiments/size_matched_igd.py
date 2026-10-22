@@ -92,15 +92,13 @@ def my_igd(objs, PF):
     return float(np.sqrt(d.min(axis=1)).mean())
 
 
-def maximin(P, k):
-    c = P.mean(axis=0)
-    idx = [int(np.argmax(((P - c) ** 2).sum(axis=1)))]
-    d = np.linalg.norm(P - P[idx[0]], axis=1)
-    for _ in range(k - 1):
-        j = int(np.argmax(d))
-        idx.append(j)
-        d = np.minimum(d, np.linalg.norm(P - P[j], axis=1))
-    return P[idx]
+# NOTE: a coverage-maximising (farthest-point) subset is deliberately NOT used
+# here. Such a subset maximises the spread of the selected points, which is the
+# objective behind hypervolume, not the mean distance-to-front that IGD
+# averages; on some problems it selects outliers and *raises* IGD (e.g.
+# LSMOP1 (5,500), where it is worse than a random subset). The size-matched
+# control therefore uses the median over random subsets, which is the neutral
+# comparison at equal cardinality.
 
 
 def load_arms():
@@ -122,7 +120,7 @@ def main():
     arms = load_arms()
     pub, rep = arms['hostNBI'], arms['hostN']
     rng = np.random.default_rng(0)
-    print(f'{"problem":18s} {"raw":>7s} {"maximin":>8s} {"random":>7s}')
+    print(f'{"problem":18s} {"raw":>7s} {"random":>7s}')
     gains = []
     for pp, (p, m, d) in enumerate(PROBS):
         PF = make_pf(p, m)
@@ -131,23 +129,18 @@ def main():
         pr, rr = pr[:n], rr[:n]
         mdp = np.median([my_igd(a, PF) for a in pr])
         md_rep = np.median([my_igd(b, PF) for b in rr])
-        gm, gr = [], []
+        gr = []
         for a, b in zip(pr, rr):
             k = len(a)
-            lo, hi = PF.min(0), PF.max(0)
-            rg = np.where(hi > lo, hi - lo, 1.0)
-            sel = maximin((b - lo) / rg, k) * rg + lo
-            gm.append(my_igd(sel, PF))
             gr.append(np.median([my_igd(b[rng.choice(len(b), k, replace=False)], PF)
                                  for _ in range(200)]))
         g_raw = 100 * (mdp - md_rep) / mdp
-        g_mx = 100 * (mdp - np.median(gm)) / mdp
         g_rd = 100 * (mdp - np.median(gr)) / mdp
-        gains.append((g_raw, g_mx, g_rd))
-        print(f'{LAB[pp]:18s} {g_raw:7.2f} {g_mx:8.2f} {g_rd:7.2f}')
+        gains.append((g_raw, g_rd))
+        print(f'{LAB[pp]:18s} {g_raw:7.2f} {g_rd:7.2f}')
     g = np.array(gains)
-    print('\nmedian: raw %.2f | maximin %.2f | random %.2f' % tuple(np.median(g, axis=0)))
-    print('better/15 (|gain|>0.05%%): raw %d | maximin %d | random %d' % tuple((g > 0.05).sum(axis=0)))
+    print('\nmedian: raw %.2f | random %.2f' % tuple(np.median(g, axis=0)))
+    print('better/15 (|gain|>0.05%%): raw %d | random %d' % tuple((g > 0.05).sum(axis=0)))
 
 
 if __name__ == '__main__':

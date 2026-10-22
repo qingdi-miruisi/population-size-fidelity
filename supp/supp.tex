@@ -1,0 +1,57 @@
+\documentclass[11pt]{article}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{lmodern}
+\pagestyle{plain}
+\setcounter{secnumdepth}{0}
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Supporting information}\\[4pt]
+{\large A population-size fidelity framework for reference-vector multi-objective evolutionary algorithms}\\[2pt]
+{\normalsize Yuxuan ZHANG}
+\end{center}
+
+\section{Table S1. Static settings}
+\input{tableS1_static.tex}
+
+Median IGD of the host under five static settings of the exchange count $n_{\mathrm{ex}}$ and the hybridisation weight $\gamma$, on the fifteen problems, with the best setting per problem (the ``best'' column names it). This sweep supplies the reference against which the online scheduling layer of Section~5.5 is judged.
+
+\section{Table S2. Sensitivity to the exchange count}
+\input{tableS2_K_sensitivity.tex}
+
+Median IGD when the exchange count $K$ is swept over $\{3,5,10\}$ at the fixed setting $n_{\mathrm{ex}}=10$, $\gamma=0.7$, with the best value per problem. The $K=5$ column reproduces the $(10,0.7)$ column of Table~S1, which fixes the reference arm of the sweep.
+
+\section{Table S3. Repair~1 and repair~2}
+\input{tableS3_repairs.tex}
+
+Median IGD of the published arm and of the two admissible repairs, with the median relative change of each repair against the published arm ($\Delta_1$, $\Delta_2$; positive means the repair attains a smaller indicator).
+
+\section{Table S4. The bounded-angle constructor (Case~C)}
+\input{tableS4_caseC.tex}
+
+Requested size $N$, number of objectives $M$, the size $L$ of the underlying lattice, the final size and the minimum inter-vector angle $\gamma_{\min}$ of the bounded-angle constructor. The floor $\theta_{\min}=1^\circ$ was never binding on the settings studied.
+
+\section{Table S5. The scheduling layer}
+\input{tableS5_layer.tex}
+
+Median IGD of the scheduling layer against the published host and against the host at the requested population size, with the median relative change against each reference.
+
+\section{Table S6. Declared-versus-published $p$-values}
+\input{tableS6_pvalues.tex}
+
+Two-sided paired Wilcoxon signed-rank $p$-values of the declared arm against the published arm of Section~5.2 (the two same-size arms). None separates, which is why the difference between them is reported as an unresolved residual.
+
+\section{Table S7. Catalogue validation on DTLZ1--7}
+\input{tableS7_peers.tex}
+
+Median IGD at three objectives (requested $N=100$, budget $10^5$ evaluations) of the published, repair-2 and bounded-angle variants for MOEA/D, RVEA and LMOCSO. Repair~2 restores MOEA/D to exactly 100 individuals; the bounded-angle constructor repairs the Case-C pairs on the degenerate fronts DTLZ5--6.
+
+\clearpage
+\section{Table S8. The size-matched IGD control}
+\input{tableS8_sizematch.tex}
+
+Median relative change of the repaired host against the published host (``raw''), and the same change after each repaired front is downsampled to the published arm's realised size (91 at three objectives, 85 at five) so that the two arms are compared at equal cardinality. The downsampled indicator is the median over 200 subsets of that size drawn uniformly without replacement (NumPy \texttt{default\_rng(0)}), recomputed against the same reference front (PlatEMO \texttt{GetOptimum(400)}, reconstructed in Python). A coverage-maximising (farthest-point) subset is deliberately not used: it optimises the spread of the selected points rather than the distance-to-front that IGD averages and can select outliers that raise IGD. The bottom rows give the median change over the fifteen problems and the number on which the repaired host is better.
+
+\end{document}

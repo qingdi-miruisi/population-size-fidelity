@@ -295,6 +295,25 @@ plus three figure insertions. Disposition:
   P1-18 K margins; P1-19 pairing; P1-23 artifacts; N-14 candidate-pool confirmation
   (maximin-distance padding vs MUD in the released constructor).
 
+## 3n. Sixth-review round closed out (2026-10-22)
+
+B1 fixed (the surviving-gain list now names LSMOP6 at five objectives, not
+LSMOP1, and reports the one sign reversal under downsampling). B2 resolved by
+dropping the maximin control entirely: farthest-point selection optimises
+spread (a hypervolume-like objective), not the distance-to-front that IGD
+averages, and on LSMOP1 (5,500) it selects outliers and raises IGD (7.7 points
+worse than a random subset); the control now uses the median over 200 random
+subsets only, with the reason stated in 5.3 and in the script. B3 closed: a
+master `supp/supp.tex` with captions for S1-S8 compiles to a 4-page
+`supplementary.pdf` (S8 caption carries the method details: maximin rejected,
+200 random subsets, seed 0). B4 closed: the three `.lock` files, the unused
+`fig_deficit.pdf` and the four unused tables were removed and the package
+rebuilt from scratch (41 files, 0 junk, compiles independently to 16 pages and
+4 pages). Suggestions applied: abstract 194 words (<=195), "best such subset"
+wording gone with maximin, Fig. 4 x-label no longer repeats the asterisk note,
+Fig. 1 arrow labels nudged, checklist 4.1 updated to the GitHub v1.23/v1.24
+state. Compiled: 16 pages, 0 errors, 0 undefined, abstract 194 words. Tag v1.24.
+
 ## 3m. SCIS-oriented reframe and the size-matched control (2026-10-22)
 
 After the SCIS prescreen return, two changes were made for a resubmission:
@@ -421,11 +440,13 @@ supervisor/college to the affiliation if applicable.
 
 ## 4. Items the author must complete before uploading
 
-1. **Deposit the supporting information** (audit script, `supp/*.csv`, corrected
-   variants, driver scripts, raw per-run records) in a public repository and
-   quote the resulting identifier in the Data availability statement. The
-   statement currently says the materials are available on request, which is
-   acceptable at submission but weaker than an archive.
+1. **DONE (2026-10-22).** The supporting information is deposited at
+   `github.com/qingdi-miruisi/population-size-fidelity` (tag `v1.23`, later
+   `v1.24`), and the Data availability statement quotes that identifier; the
+   old "available on request" wording is gone. The repository contains the
+   audit script, the per-file listing, `L(N,M)`, the trace, the measured
+   angles, the corrected variants, the driver scripts (including
+   `experiments/size_matched_igd.py`), and the raw per-run records.
 2. ORCID iD REGISTERED (2026-10-10): 0009-0007-4881-0917 (Yuxuan Zhang,
    Zhangyuxuan@aeu.edu.cn, visibility Everyone). Enter this ID in the
    submission system; the SCIS2026 class does not print ORCID in the PDF.
