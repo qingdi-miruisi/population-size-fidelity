@@ -577,3 +577,17 @@ comparing 91 individuals with 100.
 `https://github.com/qingdi-miruisi/population-size-fidelity` — 71 files, 19 MB,
 tag `v1.1-final`. Contains the audit, the experiment harnesses, every
 generator script, all derived CSV tables and the **raw per-run archives**.
+
+---
+
+## 3o. 终稿敲定：参考文献第 33 条对齐修复（2026-10-22）
+
+发现：终稿 page 16 最后一条参考文献（33）的编号左缘为 33.7 pt、正文/续行左缘 49.3 pt，而其余条目编号 52.0 pt、正文/续行 67.6 pt——该条被排到 thebibliography 悬挂缩进之外。
+
+原因：手写文献表最后一条 \bibitem{33} 与 \end{thebibliography} 之间缺空行，段落未闭合，\endlist 重置边距后最后一段落在列表外。
+
+修复：\bibitem{33} 后补一个空行（仅空白变化，正文/数据/图件零改动）。重编译后 page 16 第 33 条坐标为 52.0 / 67.6 / 67.6，与 10–32 条一致；main.pdf 仍为 16 页、0 错误、0 未定义引用、摘要 194 词。
+
+重建：source_package.zip 以修复后的 main.tex 从零重打（35 文件、0 垃圾、哈希全部匹配、解压独立编译 16 页 + supp 4 页，与工作区产物字节一致）。终稿四件套已归入 submission_final/（含 README 与 SHA-256 清单）。
+
+状态：根目录 main.pdf 已替换为修复版；仓库提交该空行后把 tag v1.26 强制移到新提交（或接受仅空白差异）。
