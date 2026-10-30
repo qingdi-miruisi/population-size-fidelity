@@ -17,6 +17,7 @@
 \setlength{\floatsep}{5pt plus 2pt minus 2pt}
 \setlength{\intextsep}{5pt plus 2pt minus 2pt}
 \renewcommand{\arraystretch}{0.90}
+\hypersetup{pdftitle={Auditing and repairing silent failures of a controlled quantity in evolutionary optimization},pdfsubject={Sci China Inf Sci, Research Paper, release v1.38},pdfkeywords={population-size fidelity, reproducibility, software audit}}
 \begin{document}
 %\oa
 
@@ -365,7 +366,7 @@ Two methodological conclusions follow. The first is that the calculus converts a
 
 The study has clear limits. The census measures one distribution at one version and is not a survey; we demonstrate the comparison risk in a controlled setting but do not survey the published literature, so how often published studies report the requested rather than the realised size remains open. The declared-versus-realised comparison coincides by construction with a difference in population size, so it is the indicator-cardinality control of Section~\ref{sec:effect} that separates the mechanical from the search component, and the residual effect it leaves is small. The $M=5$ and $D=1000$ cells use twenty seeds, and power is limited over fifteen comparisons. The framework detects and repairs infidelity but cannot decide how large a population should be.
 
-{\sloppy \noindent\textbf{Data availability.} The release is at \url{https://github.com/qingdi-miruisi/population-size-fidelity} at tag v1.37, one immutable commit, and contains the audit script (\texttt{audit/audit13\_lex.py}, run with the path to the audited tree), the per-file listing, the $L(N,M)$ table, the corrected variants, the drivers, the seed list and the raw archives. The audited distribution is PlatEMO 4.16, whose source tree (2616 files, of which 1887 are \texttt{.m}) hashes to \texttt{6caa0847dbf2850f}, the first 16 hex digits of the SHA-256 over the sorted paths and contents, with the full digest in the repository; no file of it was modified. Experiments ran single-threaded in MATLAB R2026a with the recorded seeds; the cardinality and hypervolume controls use Python 3.13 with numpy, scipy and pymoo.\par}
+{\sloppy \noindent\textbf{Data availability.} The release is at \url{https://github.com/qingdi-miruisi/population-size-fidelity} at tag v1.38, one immutable commit, and contains the audit script (\texttt{audit/audit13\_lex.py}, run with the path to the audited tree), the per-file listing, the $L(N,M)$ table, the corrected variants, the drivers, the seed list and the raw archives. The audited distribution is PlatEMO 4.16, whose source tree (2616 files, of which 1887 are \texttt{.m}) hashes to \texttt{6caa0847dbf2850f}, the first 16 hex digits of the SHA-256 over the sorted paths and contents, with the full digest in the repository; no file of it was modified. Experiments ran single-threaded in MATLAB R2026a with the recorded seeds; the cardinality and hypervolume controls use Python 3.13 with numpy, scipy and pymoo.\par}
 
 \noindent\textbf{Conflict of interest.} The author declares that he has no conflict of interest: the audited platform is an open-source community project with which he has no financial or personal relationship.
 
