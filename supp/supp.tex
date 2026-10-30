@@ -49,7 +49,7 @@ Two-sided paired Wilcoxon signed-rank $p$-values of the declared arm against the
 Median IGD at three objectives (requested $N=100$, budget $10^5$ evaluations) of the published, repair-2 and bounded-angle variants for MOEA/D, RVEA and LMOCSO. Repair~2 restores MOEA/D to exactly 100 individuals; the bounded-angle constructor repairs the Case-C pairs on the degenerate fronts DTLZ5--6.
 
 \clearpage
-\section{Table S8. The size-matched IGD control}
+\section{Table S8. The indicator-cardinality IGD control}
 \input{tableS8_sizematch.tex}
 
 Median relative change of the repaired host against the published host (``raw''), and the same change after each repaired front is downsampled to the published arm's realised size (91 at three objectives, 85 at five) so that the two arms are compared at equal cardinality. The downsampled indicator is a two-level median: first over 200 subsets of that size drawn uniformly without replacement (NumPy \texttt{default\_rng(0)}) within each run, then over the 30 (20) runs, recomputed against the same reference front (PlatEMO \texttt{GetOptimum(400)}, reconstructed in Python). A coverage-maximising (farthest-point) subset is deliberately not used: it optimises the spread of the selected points rather than the distance-to-front that IGD averages and can select outliers that raise IGD. The last column gives the same raw comparison under the exact hypervolume (normalised objectives, reference point at 1.1). The bottom rows give the median change over the fifteen problems and the number on which the repaired host is better; the two indicators agree in sign on 13 of the 15 problems.

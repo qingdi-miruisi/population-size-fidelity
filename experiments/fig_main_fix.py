@@ -137,7 +137,8 @@ for pp in range(len(PROBS)):
         lo, hi = np.percentile(bs, [2.5, 97.5])
         means.append(md)
         errs.append([[md - lo], [hi - md]])
-        sigs.append(wilcoxon_p(a, b) < 0.05)
+        from scipy.stats import mannwhitneyu
+        sigs.append(mannwhitneyu(a, b, alternative='two-sided').pvalue < 0.05)
     else:
         means.append(np.nan); errs.append([[np.nan], [np.nan]]); sigs.append(False)
 
@@ -154,7 +155,7 @@ means_s = [means[i] for i in order]
 errs_s  = [np.array(errs[i][0][0], dtype=float) for i in order], \
           [np.array(errs[i][1][0], dtype=float) for i in order]
 sigs_s  = [sigs[i] for i in order]
-holm_survivor = 'LSMOP1 (5,500)'   # the single Holm-corrected survivor
+holm_survivors = {'DTLZ1', 'LSMOP8', 'LSMOP1 (5,500)', 'LSMOP6 (5,500)'}   # unpaired Holm survivors
 
 matplotlib.rcParams['font.family'] = 'serif'
 matplotlib.rcParams['font.serif'] = ['Times New Roman', 'STIXGeneral', 'DejaVu Serif']
@@ -172,7 +173,7 @@ for i, lab in enumerate(LAB_s):
     m = means_s[i]
     if not np.isfinite(m):
         continue
-    filled = (lab == holm_survivor)
+    filled = (lab in holm_survivors)
     ax.plot(m, i, 'o', ms=5, mfc=('k' if filled else 'white'),
             mec='k', mew=0.8, zorder=5)
 for i, s in enumerate(sigs_s):
