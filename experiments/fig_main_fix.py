@@ -164,7 +164,7 @@ matplotlib.rcParams['mathtext.fontset'] = 'stix'
 cols = [C_BETTER if m >= 0 else C_WORSE for m in means_s]
 errs_arr = np.array([np.array(errs_s[0], dtype=float),
                      np.array(errs_s[1], dtype=float)])
-fig, ax = plt.subplots(figsize=(6.8, 3.6))
+fig, ax = plt.subplots(figsize=(5.5, 2.95))
 ax.barh(y, means_s, xerr=errs_arr, color=cols, alpha=0.9,
         error_kw=dict(lw=0.7, capsize=2.5), edgecolor='none')
 # marker at each bar tip: solid for the Holm survivor, hollow otherwise
