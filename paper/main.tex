@@ -13,6 +13,10 @@
 \input{numbers_xplatform.tex}
 \input{numbers_round13.tex}
 
+\setlength{\textfloatsep}{7pt plus 2pt minus 2pt}
+\setlength{\floatsep}{7pt plus 2pt minus 2pt}
+\setlength{\intextsep}{7pt plus 2pt minus 2pt}
+\renewcommand{\arraystretch}{0.94}
 \begin{document}
 %\oa
 
@@ -30,15 +34,14 @@
 \AuthorMark{Zhang Y X}
 \AuthorCitation{Zhang Y X}
 
-\title{Population-size fidelity in reference-vector multi-objective evolutionary algorithms}{A population-size fidelity framework for reference-vector MOEAs}
+\title{Auditing and repairing silent failures of a controlled quantity in evolutionary optimization}{Auditing and repairing silent control-variable failures}
 
 \author[1]{Yuxuan ZHANG}{{Zhangyuxuan@aeu.edu.cn}}
 
 \address[1]{Graduate School, Army Engineering University of PLA, Nanjing 210007, China}
 
-\abstract{A computational experiment is only as credible as the quantities it claims to control. The population size of a reference-vector multi-objective evolutionary algorithm can silently stop being one of them; we turn this into an audit framework, with PlatEMO 4.16 as the case study. The framework separates three quantities --- requested, realised, reported --- and provides two propositions, an audit, a repair catalogue and a reporting protocol. It finds the assignment in at least 84 of 1887 source files, covering at least 83 of 360 algorithms. A trace of sixteen algorithms quantifies the risk: configuring 100 realises 91 individuals for nine of thirteen affected algorithms, as few as 31 for four that shrink, and 100 for three unaffected ones, so a table reporting 100 risks comparing populations up to 3.2-fold apart. On fifteen problems, restoring the requested size leaves the raw-IGD median no worse on thirteen (twelve better) and still better on ten after a size-matched control, yet significant on only one after correction; three repair cases demonstrated and a fourth diagnosed, so no single one-line repair is universal. The audit needs only the constructor interface, so fidelity is checkable in any such library.}
-
-\keywords{population-size fidelity, reference-vector algorithm, benchmarking reproducibility, evolutionary multi-objective optimization, PlatEMO, fair comparison, large-scale optimization}
+\abstract{A computational experiment is only as credible as the quantities it claims to control. We study a failure mode in which such a quantity silently stops being controlled: in reference-vector evolutionary optimization the population size comes from a lattice of rounded cardinality; where that value is written back over the request, the declared size is not the size the runs use. We give the problem a calculus. First, a fidelity principle over the requested, realised and reported sizes, with an exact characterisation of the admissible cardinalities and the deficit they induce. Second, a proposition showing that the induced comparison bias is one-signed, so an uncorrected table favours whichever arm evaluates more individuals. Third, a decision procedure that locates the offending assignments in a source tree, sound with a measured residual, and a repair catalogue whose admissible member depends on how an algorithm couples its population to its reference set. On a widely used platform the assignment occurs in 84 of 1887 files (83 of 360 algorithms); on fifteen problems restoring fidelity leaves the indicator better on twelve, ten of them under a size-matched control, yet significant on only one after correction.}
+\keywords{reproducibility of computational experiments, controlled quantities, software audit, evolutionary optimization, benchmarking methodology, population-size fidelity}
 
 \maketitle
 
@@ -57,11 +60,11 @@ That is the failure the framework addresses, and it is a reporting failure rathe
 
 The size actually realised leaves traces that a reader can check without instrumenting the platform, which is what makes the problem detectable rather than merely suspected. The per-generation cost of a reference-vector method is proportional to $N_{\mathrm{real}}$, so under a fixed evaluation budget the number of completed generations is inversely proportional to it; in our controlled runs the declared size of 100 corresponds to \genFix{} generations and the realised size of 91 to \genHost{}, a ratio of \genRatio{} against the predicted \popRatio{}. A study that reports its generation count, or publishes convergence curves against generations, therefore exposes the discrepancy, and a study that reports only the final indicator hides it.
 
-The mechanism is easy to miss, and we missed it ourselves: it surfaced only when a controlled comparison of an adaptive scheduling layer refused to reproduce. An earlier version of that layer appeared to improve its host algorithm by a double-digit percentage, and the improvement survived visual inspection of convergence curves. Most of it did not survive matching the population size, because the host was running with 91 individuals while the layer ran with 100.
+The mechanism is easy to miss: it surfaced in our own work only when an adaptive scheduling layer refused to reproduce, and most of its apparent gain disappeared once the population size was matched.
 
-We therefore present the episode not as a bug report but as the framework for \emph{population-size fidelity} that it motivates: the property that the population size a method runs with equals the size it reports. The framework has four parts. First, a fidelity principle that states what must hold and why a violation is a threat to reproducible comparison, since reproducibility in evolutionary computation is itself an established concern~\cite{12}. Second, an auditing procedure that locates the offending constructor calls in a code base. Third, a catalogue of corrections, which shows that a single one-line repair is not universally valid and that the admissible repair depends on how an algorithm couples its population to its reference set. Fourth, a reporting protocol that makes violations visible in future work. We then apply the whole framework to PlatEMO 4.16 as a case study, quantify the consequences with controlled experiments on a large-scale suite, and show that the framework is what turns an isolated observation into a checkable, reusable procedure.
+We therefore present the episode not as a bug report but as the calculus it motivates; the four parts are stated as (C1)-(C4) below and developed in Section~\ref{sec:framework}.
 
-The contribution is therefore not the disclosure of a defect but the construction and validation of an instrument. Specifically, the paper (i) separates the requested, realised and reported sizes and formalises fidelity over them, proving that the deficit introduced by a lattice constructor is one-signed and inflates the number of generations completed under a fixed budget; (ii) reduces the search for infidelity to an auditable pattern, tested against fourteen constructions, twelve handled as intended and two dynamic constructions disclosed as false negatives; (iii) shows by construction that the repair is algorithm-dependent, with three cases demonstrated and a fourth diagnosed, and the mechanism of the hardest case measured rather than asserted; (iv) quantifies the consequences on a fifteen-problem suite with a paired design, effect sizes and a three-arm control that exposes the size effect at a fixed declaration together with the residual between two same-size arms; and (v) supplies a reporting protocol together with fully released materials.
+The contribution is therefore not the disclosure of a defect but the construction and validation of an instrument, in four parts. (C1)~A \emph{fidelity calculus}: Definition~\ref{def:fidelity} separates the requested, realised and reported sizes, Proposition~\ref{prop:exact} characterises the admissible cardinalities exactly and shows the induced deficit is one-signed, and Proposition~\ref{prop:bias} shows the resulting comparison bias is one-signed as well, so an uncorrected table systematically favours the arm that evaluates more individuals. (C2)~A \emph{decision procedure}: infidelity is reduced to a syntactic pattern decidable over a source tree, with its soundness stated and its residual measured against fourteen parser constructions. (C3)~A \emph{repair catalogue}: the admissible repair is shown to be algorithm-dependent, with three cases demonstrated and a fourth diagnosed, and the mechanism of the hardest case measured rather than asserted. (C4)~\emph{Validation}: a census of the distribution, a controlled fifteen-problem study with a paired design and a size-matched control, and a reporting protocol with fully released materials.
 
 \section{Related work}
 \label{sec:related}
@@ -69,19 +72,19 @@ Four strands of recent work frame this study. The first is the reference-vector 
 
 The second strand is the benchmarking-methodology literature. Community guidance has long warned that an indicator value is comparable only when the experimental protocol is fixed~\cite{15,16}, and comparison results have since been shown to depend strongly on the specification of the population size, the quantity we audit~\cite{9}; wall-clock time rather than evaluations alone has been argued to be the budget that matters in practice~\cite{17}; the reproducibility of evolutionary computation has been examined in its own right~\cite{12}; the rigour of the field has been critically reviewed~\cite{18}; and the design of benchmarks with practical impact has been reconsidered~\cite{19}. The closest antecedent to our work is an analysis of single-objective algorithms implemented across thirteen frameworks, which found that even identical parameter settings can yield different results because of implementation differences; that study raises the general concern and calls for guidelines, but it does not isolate a mechanism that a reader can check, and it covers single-objective algorithms~\cite{10}. Our contribution is a mechanism of exactly that kind, located in the reference-vector constructor, together with the audit and the repairs that make it actionable.
 
-The third strand is the rapid arrival of methods driven by large language models, which generate offspring, design operators and steer multi-objective search end to end~\cite{4,5,6,20}, and are almost always benchmarked against reference-vector baselines drawn from the same platforms that we audit. A systematic population-size mismatch in those baselines would therefore propagate into the comparisons that this fast-moving literature uses to establish its gains.
+The third strand is the arrival of methods driven by large language models, which generate offspring and steer multi-objective search end to end~\cite{4,5,6,20}; they are benchmarked against reference-vector baselines drawn from the same platforms, so a systematic mismatch in those baselines propagates into the comparisons that establish their gains.
 
-The fourth strand is the widening of the problem classes to which reference-vector methods are applied: surrogate-assisted methods for expensive and high-dimensional problems, and constrained variants, are surveyed at increasing frequency~\cite{21,22,23}, and applications built on them range from expensive optimization to real-world deployment, including work published in this journal~\cite{24,25}. Every one of these families inherits the reference-vector selection machinery and, with it, the population-size convention under audit. The fidelity problem is therefore not tied to one benchmark but to the shared substrate of a whole class of methods.
+The fourth strand widens the problem classes to which reference-vector methods are applied --- surrogate-assisted and constrained variants~\cite{21,22,23}, with applications including work published in this journal~\cite{24,25}. Every such family inherits the reference-vector machinery and with it the population-size convention under audit, so the problem is tied not to one benchmark but to the substrate of a class of methods.
 
-Two positions in this literature come closest to ours and deserve an explicit contrast, because the difference is the difference between a premise and an instrument. Ishibuchi \emph{et al.}~\cite{9} show that the population size must be specified and held fixed for a fair comparison; we show \emph{how} a specified size can nevertheless stop being the size that is used, formalise the failure (Definition~1 and Propositions~1--2), and turn it into an audit, a repair catalogue and a reporting protocol. Ravber \emph{et al.}~\cite{10} show that implementation differences across frameworks change single-objective results and call for guidelines; we locate one such mechanism in the reference-vector constructor of a multi-objective platform, expose its size effect at a fixed declaration together with the residual between two same-size arms through a three-arm design, and quantify the consequence rather than only raising the concern.
+Two positions come closest to ours and deserve an explicit contrast, because the difference is that between a premise and an instrument. Ishibuchi \emph{et al.}~\cite{9} show that the population size must be specified and held fixed for a fair comparison; we show \emph{how} a specified size can nevertheless stop being the size that is used, formalise the failure (Definition~1 and Propositions~1--2), and turn it into an audit, a repair catalogue and a reporting protocol. Ravber \emph{et al.}~\cite{10} show that implementation differences across frameworks change single-objective results and call for guidelines; we locate one such mechanism in the reference-vector constructor of a multi-objective platform, expose its size effect at a fixed declaration together with the residual between two same-size arms through a three-arm design, and quantify the consequence rather than only raising the concern.
 
-\section{The population-size fidelity framework}
+\section{A fidelity calculus}
 \label{sec:framework}
 We now state the framework in a form that is independent of any particular library. Throughout, a \emph{reference-vector method} is an algorithm whose population is organised around a finite set of reference vectors, the symbol $N$ denotes the population size that the user sets, and $M$ denotes the number of objectives. Figure~\ref{fig:framework} summarises where the three quantities come from and where fidelity is checked.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.61\textwidth]{fig_framework.pdf}
+\includegraphics[width=0.54\textwidth]{fig_framework.pdf}
 \caption{Where the three population-size quantities come from, and where the fidelity condition is checked. The constructor returns a reference set of cardinality $L$; the write-back stores $L$ in the problem object, so the platform records $N_{\mathrm{rep}}=L$ rather than the request; the run evaluates $N_{\mathrm{real}}=\sum_k|P_k|$ at the checkpoint. The two drifts and the four-part framework complete the picture.}
 \label{fig:framework}
 \end{figure}
@@ -90,7 +93,7 @@ We now state the framework in a form that is independent of any particular libra
 \label{sec:principle}
 We first make the notion precise, because the whole framework rests on distinguishing three quantities that are usually conflated.
 
-\begin{definition}[Population-size fidelity]
+\begin{definition}[Population-size fidelity]\label{def:fidelity}
 Consider a reference-vector method configured with a requested size $N_{\mathrm{req}}$. At a checkpoint --- the final result set, after any reference-set adaptation --- the method holds a population $P = \bigcup_k P_k$ of total size $N_{\mathrm{real}} = \sum_k |P_k|$, and its output records a size $N_{\mathrm{rep}}$. The method is \emph{population-size faithful} if $N_{\mathrm{req}} = N_{\mathrm{real}} = N_{\mathrm{rep}}$ at that checkpoint; otherwise it suffers a \emph{size infidelity}. Two drifts are worth separating. The \emph{structural drift} $\delta_C = N_{\mathrm{req}} - L$ is the shortfall between the request and the cardinality $L$ the reference-vector constructor returns; Proposition~1 shows it is non-negative. The \emph{runtime drift} $\delta_R = N_{\mathrm{req}} - N_{\mathrm{real}}$ is the shortfall between the request and the population actually evaluated at the checkpoint; its sign is not fixed in general, and a method that prunes its own reference set after construction realises fewer individuals than the constructor returned (so $\delta_R > \delta_C$). Both are non-negative throughout the platform studied here.
 \end{definition}
 
@@ -102,7 +105,7 @@ It is useful to separate fidelity from quality: an unfaithful run is not necessa
 
 The definition's practical interest comes from two facts that convert an anecdote into a checkable statement.
 
-\begin{proposition}[One-sided structural drift]
+\begin{proposition}[One-sided structural drift]\label{prop:exact}
 The constructor used in this study (Section~\ref{sec:case}) is the two-layer simplex lattice: a first layer of $\binom{H_1+M-1}{M-1}$ points, with $H_1$ the smallest integer satisfying $\binom{H_1+M}{M-1}>N$, and, when $H_1<M$, a second layer of $\binom{H_2+M-1}{M-1}$ points with $H_2$ the smallest \emph{non-negative} integer satisfying $\binom{H_1+M-1}{M-1}+\binom{H_2+M}{M-1}>N$, added only when $H_2\ge1$; the second layer is the $H_2$-division simplex lattice scaled by $1/2$ and shifted by $1/(2M)$ in every coordinate (``$W_2/2+1/(2M)$''), which is what prevents its points from duplicating the boundary directions. Then $L(N,M)=\binom{H_1+M-1}{M-1}+\binom{H_2+M-1}{M-1}\le N$ for all $M\ge2$, $N\ge M$; the structural drift $\delta_C = N - L(N,M)$ is therefore non-negative and can only remove individuals, never add them.
 \end{proposition}
 
@@ -114,7 +117,7 @@ We verified the proposition exhaustively rather than trusting the argument alone
 
 The range is the range we scanned, not a documented limit: the platform's problems take the number of objectives as an argument, and its sources carry defaults up to ten (for example, the MaF8 problem declares \texttt{obj.M~=~10} as its default). The scan extends to $M=15$, half as much again beyond that default ceiling, which comfortably brackets the objective counts at which reference-vector methods are actually run and is cheap enough to enumerate completely; beyond it the closed form still applies at negligible cost. The complete table $L(N,M)$ over that range is released as a machine-readable file, and points outside it follow from the closed form of the constructor rather than from a measurement.
 
-\begin{proposition}[Generation inflation]
+\begin{proposition}[Generation inflation]\label{prop:gen}
 Consider a method that states a size $N_{\mathrm{req}}=N$ but evaluates a population of size $N_{\mathrm{real}}=L<N$ and consumes $cL$ evaluations per generation, stopping when the budget $\mathrm{FE}_{\max}$ is exhausted. If $cN\le \mathrm{FE}_{\max}$, the ratio of the generations the actual run completes to those the stated size implies is $\big\lfloor \mathrm{FE}_{\max}/(cL)\big\rfloor / \big\lfloor \mathrm{FE}_{\max}/(cN)\big\rfloor$, which converges to $N/L$ as $\mathrm{FE}_{\max}\to\infty$; the relative excess therefore approaches $(N-L)/L$, with a floor-induced error of order $O(cN/\mathrm{FE}_{\max})$.
 \end{proposition}
 
@@ -122,7 +125,33 @@ Consider a method that states a size $N_{\mathrm{req}}=N$ but evaluates a popula
 
 The premise of Proposition~2 is the reporting condition and not the internal mechanics: the excess appears whenever the quantity a study states is $N_{\mathrm{req}}$ while the quantity the run realises is $L$. A run that both realises $L$ and reports $L$ is described by the same formula with $N=L$ and shows no excess, which is the consistency condition of the framework. Two consequences follow. When the constructor is the one of Section~\ref{sec:case}, Proposition~1 makes the drift one-signed, so an unfaithful method is biased in a fixed direction rather than randomly perturbed. When the comparison is made under a fixed evaluation budget, Proposition~2 makes the drift translate directly into a difference in the number of generations, which is exactly the quantity that a convergence curve displays. Neither fact is visible from a single reported population size, which is why the framework is needed.
 
-\subsection{Auditing a library for size infidelity}
+\subsection{Cardinality and the sign of the induced bias}
+\label{sec:bias}
+A comparison between two arms that differ in how many individuals they evaluate is not neutral, and the direction of the bias can be stated exactly. Let $R$ denote the reference set against which the indicator is computed and, in the normalised objective space, $\mathrm{IGD}(\mathcal{P})=\frac{1}{|R|}\sum_{r\in R}\min_{p\in\mathcal{P}}\lVert r-p\rVert$.
+
+\begin{proposition}[One-signed cardinality bias]\label{prop:bias}
+For any populations $\mathcal{P}$ and $Q$, $\mathrm{IGD}(\mathcal{P}\cup Q)\le\mathrm{IGD}(\mathcal{P})$ and $\mathrm{HV}(\mathcal{P}\cup Q)\ge\mathrm{HV}(\mathcal{P})$. Hence, if two arms differ only in the number of individuals they evaluate, the arm with the larger realised size has the weakly smaller indicator and the weakly larger hypervolume, and an uncorrected comparison favours it.
+\end{proposition}
+\begin{proof}
+Every term of the sum is a minimum over a set that contains the original one, so no term increases; the dominated region of a union contains the dominated region of either part.
+\end{proof}
+
+Proposition~\ref{prop:bias} is what turns the deficit from a detail into a threat: the bias is not random but one-signed, and it rewards precisely the algorithms that honour the request. It also fixes what a control must do --- compare both arms at the same cardinality, which is the design of Section~\ref{sec:effect}.
+
+\begin{proposition}[Identifiability from the generation count]\label{prop:ident}
+If each generation costs $c\,N_{\mathrm{real}}$ evaluations for a constant $c$ independent of the population, and the budget $B$ is fixed, then $g\,N_{\mathrm{real}}=B/c$ for every run. Hence the reported generation count identifies the realised size, and two arms that declare the same $N$ but report different $g$ cannot both be running at that $N$.
+\end{proposition}
+\begin{proof}
+A run of $g$ generations at $cN_{\mathrm{real}}$ evaluations each consumes $g\,c\,N_{\mathrm{real}}=B$; dividing by $gc$ gives the invariant, and $g$ then determines $N_{\mathrm{real}}$ up to the platform constant.
+\end{proof}
+
+The two arms of Table~\ref{tab:cost} satisfy it to within that constant: $552\times91=50{,}232$ and $499\times100=49{,}900$, a discrepancy of 0.7\%, so a reader who is given only the declared size and the generation count can already tell that the two rows did not run at the same size.
+
+\subsection{A decision procedure for size infidelity}
+\begin{definition}[Constructor write-back]\label{def:pattern}
+A statement is a \emph{constructor write-back} if it assigns to the field of the problem object that stores the population size a value that is the cardinality returned by a call to a reference-vector constructor. A file is \emph{infidelic} if some statement reachable on an execution path is a constructor write-back and the assigned value is not subsequently reconciled with the request. The audit decides the syntactic subclass in which the call and the assignment occur in a single statement and no alias or dynamic dispatch intervenes.
+\end{definition}
+
 \label{sec:audit-proc}
 The audit rests on a single observation: size infidelity arises when the output of a reference-vector constructor is written into a shared object that stores the population size. Algorithm~\ref{alg:audit} formalises the procedure.
 
@@ -151,13 +180,13 @@ The audit rests on a single observation: size infidelity arises when the output 
 \end{algorithmic}
 \end{algorithm}
 
-The only judgement the audit requires is the static-binding test, and the deficit evaluation uses only the documented behaviour of the constructor rather than the code that calls it, so the census is reproducible by a reader who has the same release. In the case study of Section~\ref{sec:case} the constructor is a lattice whose cardinality is the largest admissible value not exceeding the request, which makes $\delta_C$ a deterministic function that can be tabulated once and reused; by Proposition~1 the sign of $\delta_C$ is non-negative throughout.
+The only judgement the audit requires is the static-binding test, and the deficit evaluation uses only the documented behaviour of the constructor rather than the code that calls it, so the census is reproducible by a reader who has the same release. The procedure is \emph{sound} by construction: it flags a file only when the parsed statement binds the constructor's size output to the object that stores the population size, so every flagged file contains the assignment. It is not complete for programs that reach the same effect through an alias or dynamic dispatch, and we measure that residual rather than assert its absence: across fourteen parser constructions, twelve are handled as intended and two dynamic ones are reported as false negatives, with no parse failures over the audited tree. Its cost is linear: each file is parsed once and each statement is tested against a constant-size pattern, so the audit runs in $O(FS)$ time over $F$ files of $S$ statements and needs $O(S)$ memory for one file's syntax tree, which is why the whole distribution is audited in seconds. In the case study of Section~\ref{sec:case} the constructor is a lattice whose cardinality is the largest admissible value not exceeding the request, which makes $\delta_C$ a deterministic function that can be tabulated once and reused; by Proposition~1 the sign of $\delta_C$ is non-negative throughout.
 
 Two implementation choices decide whether the census is trustworthy, and we make both explicit because a naive search over source text is not. First, the match must not be satisfied by a comment or by a string literal, since algorithm files document the pattern in comments and build expressions with \texttt{eval} and \texttt{sprintf}. We therefore run the pattern over a lexically reduced form of each file in which line comments, block comments and single- and double-quoted literals have been replaced by blanks, with line and column positions preserved, and we additionally require the hit to sit on a live statement. This is a lexical and not a syntactic analysis, so it can in principle miss a call assembled dynamically. We therefore wrote a suite of fourteen positive and negative constructions, covering the constructions a MATLAB source file can use to hide such a call: comments, block comments, both quote styles, escaped quotes, a percent sign inside a string, a transpose before the match, a line continuation, an assignment to another field, and calls assembled by \texttt{eval} and by \texttt{sprintf}. Twelve behave as intended and the two dynamic constructions cannot be seen lexically at all; they are disclosed as limitations. The suite earned its keep: it showed that the parser initially missed a call split across a line continuation, which we fixed, and the census is unchanged by that fix, so the gap was a false-negative path rather than a miscount. Because a miss under-counts, we treat the census as a lower bound, and we inspected the \nLexFiles{} surviving hits by hand. The parser and the suite ship with the release.
 
 Second, the audit records three quantities and not one: the requested size, the cardinality the constructor returns, and the population the run actually evaluates. Recording only the first would miss the drift, and recording only the first two would miss the four algorithms of Section~\ref{sec:case} whose population changes again after the constructor has returned.
 
-\subsection{A catalogue of corrections}
+\subsection{A repair catalogue}
 \label{sec:catalogue}
 Restoring fidelity is not a single edit, because algorithms couple their population to their reference set in different ways. We distinguish four cases, and for each we state the edit, the constructor requirement and the test that fails before the edit and passes after it.
 
@@ -181,6 +210,8 @@ The catalogue is the reason a framework is needed at all: a reader who adopts ``
 \input{tables/tab_angle.tex}
 \end{table}
 
+Within the invariant that each repair preserves, the catalogue is minimal: no listed repair implies another. We do not claim that it exhausts every possible coupling, only that each coupling we could construct falls into one of the four cases.
+
 \subsection{A reporting protocol}
 \label{sec:protocol}
 Finally, the framework prescribes what a study should report --- a schema rather than advice, because advice is not adoptable. A reference-vector study should print, for every configuration it compares, the seven columns
@@ -191,7 +222,7 @@ Finally, the framework prescribes what a study should report --- a schema rather
 
 with three decision rules attached, and with the check expressed as code so that it can be run rather than remembered. Rule~1: if $N_{\mathrm{req}} \neq N_{\mathrm{real}}$, the row must say so, and any claim about the method must use $N_{\mathrm{real}}$. Rule~2: if $N_{\mathrm{rep}} \neq N_{\mathrm{real}}$, the platform's record is not the population that was used, so the row must report all three quantities and no downstream claim may rely on the record; Table~\ref{tab:trace} shows that four of the sixteen traced algorithms are in this state. Rule~3: a comparison table must not mix rows whose \texttt{N\_real} differ unless the difference is the object of study, which Table~\ref{tab:trace} shows is violated by default. The protocol costs one line in the experimental section and one assertion at the end of a run, \texttt{assert(numel(Population) == N\_real \&\& Problem.N == N\_real)}. The protocol deliberately does not require suppressing the write-back of the size into the shared problem object, which many algorithms use to keep the population and the reference set consistent. What it requires is that the number in the table be the number the run used, and that an unrealisable request be declared as such before the runs rather than discovered afterwards. A study that cannot realise a request should either move the request to the nearest admissible value, as we do for the declared arm of Section~\ref{sec:exp}, or state the realised value and treat the request as nominal.
 
-\section{Case study: auditing PlatEMO}
+\section{Validation on a widely used platform}
 \label{sec:case}
 \subsection{The override}
 We audit PlatEMO 4.16, released in July 2026 with 360 algorithms and 630 problems --- the version that added the host of Section~\ref{sec:exp}, and the reference point for the census below. The affected line is
@@ -210,14 +241,14 @@ in which the second output of the constructor~\cite{26} is written into the popu
 
 \subsection{How the affected files use the write-back}
 \label{sec:usage}
-The lexical audit of Section~\ref{sec:audit-proc} also records what happens to the two outputs in each affected file. In \nLexReuseZ{} of the \nLexFiles{} affected files the returned set is used again after the assignment, most often as the reference set of environmental selection, so population, reference set and per-generation cost change together; in the rest only the size field is overwritten. The assignment precedes population initialisation in \nLexBefore{} of the files (\pctLexBefore\%) and follows it in \nLexAfter{} (FDV, GLMO, WASF-GA, GWASF-GA, LCSA and POCEA); in the remaining \nLexNoInit{} the initialisation sits in a helper the audit does not resolve. The released per-file table gives the line numbers, so a reader can check each classification.
+The audit also records what happens to the two outputs in each affected file. In \nLexReuseZ{} of the \nLexFiles{} files the returned set is reused after the assignment, most often as the reference set of environmental selection, so population, reference set and per-generation cost change together; in the rest only the size field is overwritten. The assignment precedes initialisation in \nLexBefore{} files (\pctLexBefore\%) and follows it in \nLexAfter{} (FDV, GLMO, WASF-GA, GWASF-GA, LCSA and POCEA); in the remaining \nLexNoInit{} the initialisation sits in a helper the audit does not resolve. The released per-file table gives line numbers for each classification.
 
 \subsection{Realised count versus requested size}
 Table~\ref{tab:deficit} and Figure~\ref{fig:deficit} give the realised count for requested sizes up to 500 and objective counts from 2 to 10. The deficit is zero only when the request coincides with an admissible lattice size. At $N=100$ and $M=3$, the setting used in the great majority of three-objective studies, the algorithm runs with \retMthree{} individuals; at $M=5$ with \retMfive{}; at $M=8$ with \retMeight{}; at $M=10$ with \retMten{}. The worst deficit in the table is \retWorst\%, and over the whole scanned range the worst case is larger still, reaching a deficit of \retWorstAll\% of the request --- that is, realising as little as a quarter of what was asked --- at high objective counts; the released table covers that range.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.62\textwidth]{fig_deficit_v2.pdf}
+\includegraphics[width=0.58\textwidth]{fig_deficit_v2.pdf}
 \caption{The default reference-vector constructor of PlatEMO 4.16. (a) Deficit $(N-L)/N$ as a percentage against the number of objectives for three requested sizes; the deficit is non-monotone in $M$ and is zero exactly at admissible sizes. (b) Realised count $L$ for a request of $N=100$ across objective counts, against the requested 100 (dashed); the $y$-axis starts at 60.}
 \label{fig:deficit}
 \end{figure}
@@ -273,7 +304,7 @@ The declared arm requests \abcDeclReqMthree{} at three objectives and \abcDeclRe
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.48\textwidth]{fig_three_arm.pdf}
+\includegraphics[width=0.44\textwidth]{fig_three_arm.pdf}
 \caption{The two contrasts of the three-arm design, one point per problem. The horizontal axis is the unexplained residual between the two same-size arms (declared minus published); the vertical axis is the combined effect (repaired minus published); the dashed lines mark zero. The three 20-seed cells ($M{=}5$ and $D{=}1000$) are drawn as squares}
 \label{fig:three_arm}
 \end{figure}
@@ -296,7 +327,7 @@ Two points deserve emphasis. First, the measured difference is a size effect as 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.80\textwidth]{fig_main.pdf}
+\includegraphics[width=0.74\textwidth]{fig_main.pdf}
 \caption{Change of the median indicator of the host from restoring the requested population size, one bar per problem, sorted by the magnitude of the change. The bar is the ratio of medians, the same quantity as the \emph{rep\,$-$\,pub} column of Table~\ref{tab:abc}; blue marks a better (smaller-indicator) corrected host and orange a worse one, the error bar is a bootstrap 95\% confidence interval for the median difference, an asterisk marks uncorrected $p<0.05$, and the solid marker is the single Holm-corrected survivor (Table~\ref{tab:sig}).}
 \label{fig:main}
 \end{figure}
@@ -315,7 +346,7 @@ Section~\ref{sec:abc} used the conservative repair to expose the size effect at 
 
 \subsection{A reported gain undone by the override}
 \label{sec:case-layer}
-To show how the override manufactures a gain we use the adaptive scheduling layer that originally motivated this work; it drives $n_{\mathrm{ex}}$, $\gamma$ and $K$ online from a convergence and a diversity signal, and it is a case study, not a contribution (Table~S5). Against the published host the layer is better on \layerBetterHost{} problems and worse on \layerWorseHost{}, with a median gain of only \layerMedHost\%: the gains above 5\% that motivated it are concentrated in \layerBigN{} problems. Against the host at the requested population size the picture narrows to \layerBetterMatched{} better and \layerWorseMatched{} worse, median \layerMedMatched\%. On the \layerBigN{} problems carrying a gain above 5\%, matching the size removes \layerShrinkMin{} to \layerShrinkMax{} percentage points of it, so much of the apparent advantage is the population difference rather than the scheduling; against the published host, the remaining nine stay within \layerSmallMax\% in either direction, with four in the layer's favour and five against. Against the best static setting the layer attains a smaller median on only \layerBeatsStaticN{} of the \nProbs{} problems. We therefore do not claim that the layer is worthless; we claim that the evidence which previously supported it was largely an artefact of comparing a 100-individual layer against a 91-individual host, and that at a matched size the advantage is small and inconsistent in sign.
+To show how the override manufactures a gain we use the adaptive scheduling layer that originally motivated this work (Table~S5). Against the published host it is better on \layerBetterHost{} problems and worse on \layerWorseHost{}, median \layerMedHost\%, but against the host at the requested size only \layerBetterMatched{} are better and \layerWorseMatched{} worse, median \layerMedMatched\%; on the \layerBigN{} problems whose gain exceeds 5\%, matching the size removes \layerShrinkMin{}--\layerShrinkMax{} percentage points of it, and against the best static setting the layer wins on only \layerBeatsStaticN{} of the \nProbs{} problems. The advantage that previously supported the layer was therefore largely an artefact of comparing 100 individuals against 91, and at a matched size it is small and inconsistent in sign.
 
 \subsection{Consequence across algorithms}
 \label{sec:across}
@@ -357,7 +388,7 @@ Two methodological conclusions follow. The first is that the framework converts 
 
 The study has clear limits. The census measures one distribution at one version and is not a survey; we demonstrate the comparison risk in a controlled setting but do not survey the published literature, so how often published studies report the requested rather than the realised size remains open. The declared-versus-realised comparison coincides by construction with a difference in population size, so it is the size-matched control of Section~\ref{sec:effect} that separates the mechanical from the search component, and the residual effect it leaves is small. The $M=5$ and $D=1000$ cells use twenty seeds, and power is limited over fifteen comparisons. The framework detects and repairs infidelity but cannot decide how large a population should be.
 
-\noindent\textbf{Data availability.} The release is publicly available at \url{https://github.com/qingdi-miruisi/population-size-fidelity}, at tag v1.26, which pins one immutable commit, and contains the audit script of Algorithm~1, the per-file audit listing, the realised-count table $L(N,M)$ over \retCombos{} combinations, the trace and cross-library tables, the corrected variants for the four repair cases, the driver scripts that regenerate every table and figure, and the raw per-run archives from which all reported statistics are recomputed. No file of the audited distribution was modified; all experiments ran in MATLAB R2026a against PlatEMO 4.16 with the recorded seeds and are single-threaded.
+\noindent\textbf{Data availability.} The release is publicly available at \url{https://github.com/qingdi-miruisi/population-size-fidelity}, at tag v1.27, which pins one immutable commit, and contains the audit script of Algorithm~1, the per-file audit listing, the realised-count table $L(N,M)$ over \retCombos{} combinations, the trace and cross-library tables, the corrected variants for the four repair cases, the driver scripts that regenerate every table and figure, and the raw per-run archives from which all reported statistics are recomputed. No file of the audited distribution was modified; all experiments ran in MATLAB R2026a against PlatEMO 4.16 with the recorded seeds and are single-threaded.
 
 \noindent\textbf{Conflict of interest.} The author declares that he has no conflict of interest: the audited platform is an open-source community project with which he has no financial or personal relationship.
 
